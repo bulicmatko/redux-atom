@@ -13,6 +13,59 @@
 
 ##
 
+## How to create Atom Factory?
+
+```js
+// counterAtom.js
+import { createReduxAtomFactory } from 'redux-atom'
+
+export default createReduxAtomFactory({
+  actionTypes: [
+    'INCREMENT',
+  ],
+  actionCreators: (actionTypes, selectors) => ({
+    increment: incrementBy => ({
+      type: actionTypes.INCREMENT,
+      payload: { incrementBy },
+    }),
+    delayedDoubleIncrement: delay => (
+      (dispatch, getState) => (
+        setTimeout(
+          () => dispatch({
+            type: actionTypes.INCREMENT,
+            payload: {
+              incrementBy: selectors.getCounterState(getState()) * 2,
+            },
+          }),
+          delay,
+        )
+      )
+    ),
+  }),
+  initState: {
+    counter: 0,
+  },
+  reducer: actionTypes => ({
+    [actionTypes.INCREMENT]:
+      (state, { incrementBy }) => ({ counter: state.counter + incrementBy }),
+  }),
+  selectors: rootSelector => ({
+    getCounterState: state => rootSelector(state).counter,
+  }),
+})
+```
+
+## How to use Atom?
+
+```js
+import createCounter from './counterAtom'
+
+export default createCounter({
+  namespace: 'COUNTER-1',   
+  rootSelector: state => state.counter1,   
+})
+```
+
 
 ## License
 
