@@ -1,25 +1,32 @@
-import { createActionTypes, createReducer } from 'redux-utilities'
-
 /**
  *  Create Redux Atom Factory
  */
-export default ({ actionTypes, actionCreators, initState, reducerFunctions, reducer, selectors }) =>
-  ({ namespace, foreignReducer = () => ({}), rootSelector }) => {
-    const at = createActionTypes(actionTypes, namespace)
-    const s = selectors(rootSelector)
-    const ac = actionCreators(at, s)
-    const r = createReducer({
-      ...reducer(at, reducerFunctions),
-      ...foreignReducer(reducerFunctions)
-    }, initState)
+export default ({
+  actionTypesFactory = () => ({}),
+  selectorsFactory = () => ({}),
+  repositoryFactory = () => ({}),
+  actionCreatorsFactory = () => ({}),
+  initialStateFactory = () => ({}),
+  reducerFactory = () => ({})
+}) => ({
+  namespace = '',
+  rootUrl = '',
+  rootSelector = state => state
+}) => {
+  const actionTypes = actionTypesFactory(namespace)
+  const selectors = selectorsFactory(rootSelector)
+  const repository = repositoryFactory(rootUrl)
+  const actionCreators = actionCreatorsFactory(actionTypes, selectors, repository)
+  const initialState = initialStateFactory()
+  const reducer = reducerFactory(actionTypes, initialState)
 
-    return {
-      actionTypes: at,
-      ...at,
-      actionCreators: ac,
-      ...ac,
-      reducer: r,
-      selectors: s,
-      ...s
-    }
+  return {
+    actionTypes,
+    ...actionTypes,
+    actionCreators,
+    ...actionCreators,
+    reducer,
+    selectors,
+    ...selectors
   }
+}
