@@ -1,15 +1,18 @@
+const noop = () => ({})
+
 /**
  *  Create Redux Atom Factory
  */
 export default ({
-  actionTypesFactory = () => ({}),
-  selectorsFactory = () => ({}),
-  repositoryFactory = () => ({}),
-  actionCreatorsFactory = () => ({}),
-  initialStateFactory = () => ({}),
-  reducerFactory = () => ({})
+  actionTypesFactory = noop,
+  selectorsFactory = noop,
+  repositoryFactory = noop,
+  actionCreatorsFactory = noop,
+  initialStateFactory = noop,
+  reducerFactory = noop
 }) => ({
   namespace = '',
+  data = {},
   rootUrl = '',
   rootSelector = state => state
 }) => {
@@ -17,7 +20,7 @@ export default ({
   const selectors = selectorsFactory(rootSelector)
   const repository = repositoryFactory(rootUrl)
   const actionCreators = actionCreatorsFactory(actionTypes, selectors, repository)
-  const initialState = initialStateFactory()
+  const initialState = initialStateFactory(data)
   const reducer = reducerFactory(actionTypes, initialState)
 
   return {
