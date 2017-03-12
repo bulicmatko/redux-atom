@@ -12,7 +12,7 @@ export default ({
   reducerFactory = noop
 }) => ({
   namespace = '',
-  data = {},
+  data = undefined,
   rootUrl = '',
   rootSelector = state => state
 }) => {
